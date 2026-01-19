@@ -10,32 +10,32 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-        /* --- 1. VARIABLES Y DISEÑO BASE --- */
+        /* --- 1. CONFIGURACIÓN VISUAL (VARIABLES) --- */
         :root {
-            --primary: #ffc2d1;
-            --secondary: #fff0f5;
-            --gold: #d4af37;
+            --primary: #ffc2d1;       /* Rosa Pastel */
+            --primary-dark: #ff8fab;
+            --gold: #d4af37;          /* Dorado */
             --gold-shine: #fceabb;
             --text-main: #5a3a45;
-            --glass: rgba(255, 255, 255, 0.90);
-            --bg-gradient: linear-gradient(135deg, #fff5f8 0%, #fff0f3 100%);
-            --shadow: 0 10px 30px rgba(212, 175, 55, 0.15);
+            --glass-bg: rgba(255, 255, 255, 0.92);
+            --bg-gradient: linear-gradient(135deg, #fff0f3 0%, #fff5f8 100%);
+            --shadow: 0 15px 35px rgba(212, 175, 55, 0.2);
         }
 
         /* MODO FIESTA (NEÓN) */
         body.party-mode {
-            --primary: #ff00ff;
-            --secondary: #1a0b1a;
+            --primary: #ff00cc;
+            --primary-dark: #cc00ff;
             --gold: #00ffff;
             --gold-shine: #ffffff;
             --text-main: #ffffff;
-            --glass: rgba(20, 0, 20, 0.95);
-            --bg-gradient: linear-gradient(135deg, #120012 0%, #2b002b 100%);
-            --shadow: 0 0 20px #ff00ff;
+            --glass-bg: rgba(20, 0, 30, 0.95);
+            --bg-gradient: linear-gradient(135deg, #1a001a 0%, #000000 100%);
+            --shadow: 0 0 25px #ff00cc, 0 0 50px #00ffff;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; transition: all 0.5s ease; }
-        
+
         body {
             font-family: 'Montserrat', sans-serif;
             background: var(--bg-gradient);
@@ -45,159 +45,160 @@
         }
 
         h1, h2, h3 { font-family: 'Great Vibes', cursive; font-weight: 400; }
-        .title-gold { 
-            color: var(--gold); 
-            background: linear-gradient(45deg, var(--gold), var(--gold-shine), var(--gold)); 
-            -webkit-background-clip: text; 
-            background-clip: text; 
-            background-size: 200% auto;
-            animation: shine 3s linear infinite;
-        }
-        @keyframes shine { to { background-position: 200% center; } }
 
-        /* --- 2. PANTALLA DE APERTURA (SOBRE) --- */
+        /* --- 2. PANTALLA DE APERTURA (SOBRE MÁGICO) --- */
         #opener {
             position: fixed; inset: 0; z-index: 9999;
             background: rgba(0,0,0,0.95);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .envelope-container { cursor: pointer; perspective: 1000px; }
+        
+        .envelope-wrapper { cursor: pointer; position: relative; }
+        .envelope-wrapper:hover { transform: scale(1.02); }
+        
+        /* Rosas animadas alrededor */
+        .roses-deco { position: absolute; font-size: 2rem; animation: floatRose 3s infinite ease-in-out; z-index: 20; }
+        @keyframes floatRose { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
         .envelope {
-            width: 300px; height: 200px; background: var(--primary);
-            position: relative; border-radius: 5px;
-            box-shadow: 0 0 50px rgba(255,255,255,0.2);
+            width: 320px; height: 220px; background: var(--primary);
+            position: relative; border-radius: 8px;
+            box-shadow: 0 0 60px rgba(255, 194, 209, 0.4);
             display: flex; justify-content: center; align-items: center;
         }
         .flap {
             position: absolute; top: 0; left: 0; width: 0; height: 0;
-            border-style: solid; border-width: 100px 150px 0 150px;
+            border-style: solid; border-width: 110px 160px 0 160px;
             border-color: var(--gold) transparent transparent transparent;
-            transform-origin: top; z-index: 10; transition: transform 0.8s ease-in-out;
+            transform-origin: top; z-index: 10; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .seal {
-            width: 60px; height: 60px; background: radial-gradient(circle, #ffd700, #b8860b);
+            width: 65px; height: 65px; background: radial-gradient(circle, #ffd700, #b8860b);
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-family: 'Great Vibes'; font-size: 1.5rem; color: #5a3a45; font-weight: bold;
-            border: 2px solid #fff; z-index: 11;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            transition: opacity 0.5s;
+            font-family: 'Great Vibes'; font-size: 1.8rem; color: #5a3a45; font-weight: bold;
+            border: 3px solid #fff; z-index: 11;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            animation: pulseSeal 2s infinite;
         }
-        .tap-hint { color: white; margin-top: 30px; animation: pulse 1.5s infinite; letter-spacing: 2px; }
+        @keyframes pulseSeal { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .open-text { color: white; margin-top: 40px; text-transform: uppercase; letter-spacing: 3px; font-size: 0.9rem; animation: fadeIn 2s infinite; }
 
         /* --- 3. CONTENIDO PRINCIPAL --- */
-        #main-app { display: none; opacity: 0; padding-bottom: 80px; }
-        
-        .container { max-width: 800px; margin: 0 auto; padding: 20px; position: relative; z-index: 5; }
-        
+        #main-app { display: none; opacity: 0; padding-bottom: 100px; }
+        .container { max-width: 850px; margin: 0 auto; padding: 20px; position: relative; z-index: 5; }
+
         .card {
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px 20px;
-            margin-top: 20px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--gold);
-            text-align: center;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-radius: 30px; padding: 50px 25px; margin-top: 20px;
+            box-shadow: var(--shadow); border: 1px solid var(--gold); text-align: center;
+            position: relative; overflow: hidden;
         }
 
         /* Textos */
-        .grandparents { font-size: 0.95rem; font-style: italic; line-height: 1.6; margin-bottom: 20px; }
-        .gp-name { font-weight: 700; color: var(--gold); }
-        .main-name { font-size: 3.5rem; margin: 10px 0; line-height: 1.2; text-shadow: 2px 2px 5px rgba(0,0,0,0.1); }
+        .grandparents { font-size: 0.9rem; font-style: italic; line-height: 1.8; margin-bottom: 20px; color: var(--text-main); }
+        .gp-name { font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
         
-        /* Detalles */
-        .details-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin: 30px 0; }
-        .detail-box { 
-            flex: 1; min-width: 140px; padding: 15px; 
-            border: 1px solid var(--primary); border-radius: 10px;
-            background: rgba(255,255,255,0.5);
+        .main-title {
+            font-size: 4rem; line-height: 1.1; margin: 15px 0;
+            background: linear-gradient(45deg, var(--gold), var(--gold-shine), var(--gold));
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+            background-size: 200% auto; animation: shineText 3s linear infinite;
         }
-        .detail-icon { font-size: 1.8rem; color: var(--gold); margin-bottom: 5px; display: block; }
+        @keyframes shineText { to { background-position: 200% center; } }
+
+        /* Detalles */
+        .details-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin: 40px 0; }
+        .detail-item { 
+            flex: 1; min-width: 150px; padding: 20px; 
+            border: 1px solid var(--primary); border-radius: 15px;
+            background: rgba(255,255,255,0.4);
+        }
+        .detail-icon { font-size: 2rem; color: var(--gold); margin-bottom: 10px; display: block; }
 
         /* Countdown */
-        .countdown { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
-        .time-unit { background: var(--gold); color: #fff; padding: 10px; border-radius: 8px; min-width: 60px; }
-        .time-num { font-size: 1.5rem; font-weight: bold; display: block; }
-        .time-label { font-size: 0.7rem; text-transform: uppercase; }
+        .countdown { display: flex; justify-content: center; gap: 10px; margin: 30px 0; }
+        .time-box { background: var(--gold); color: #fff; padding: 10px; border-radius: 10px; min-width: 65px; }
+        .t-num { font-size: 1.8rem; font-weight: 700; display: block; }
+        .t-lbl { font-size: 0.7rem; text-transform: uppercase; }
 
         /* Botones */
         .btn {
-            display: inline-block; padding: 12px 30px; margin: 10px 5px;
+            display: inline-block; padding: 15px 35px; margin: 10px 5px;
             border-radius: 50px; border: none; cursor: pointer;
-            font-weight: bold; text-decoration: none; font-family: 'Montserrat';
+            font-weight: 600; text-decoration: none; font-family: 'Montserrat';
             background: linear-gradient(45deg, var(--gold), var(--gold-shine));
-            color: #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            position: relative; overflow: hidden;
+            color: #fff; box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+            position: relative; overflow: hidden; font-size: 1rem;
         }
-        .btn::after { content: ''; position: absolute; top:0; left:-100%; width:100%; height:100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); transition: 0.5s; }
-        .btn:hover::after { left: 100%; }
-        .btn:hover { transform: translateY(-3px); }
-        .btn-wa { background: #25D366; }
+        .btn:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(212, 175, 55, 0.5); }
+        .btn-wa { background: #25D366; box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3); }
 
-        /* --- 4. EXTRAS (Juegos, Galería, etc) --- */
-        .floating-elements { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-        .balloon { position: absolute; bottom: -100px; font-size: 2rem; opacity: 0.6; animation: floatUp 15s linear infinite; }
+        /* --- 4. EXTRAS Y JUEGOS --- */
+        
+        /* Floating Background */
+        .bg-floaters { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+        .floater { position: absolute; opacity: 0.5; animation: floatUp 15s linear infinite; font-size: 24px; }
         @keyframes floatUp { to { transform: translateY(-120vh) rotate(360deg); } }
 
         /* Ruleta */
-        .wheel-section { margin-top: 40px; background: rgba(255,255,255,0.3); padding: 20px; border-radius: 15px; }
-        .wheel-container { position: relative; width: 200px; height: 200px; margin: 0 auto; }
-        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 5px solid var(--gold); background: conic-gradient(var(--primary) 0 25%, #fff 25% 50%, var(--primary) 50% 75%, #fff 75% 100%); transition: transform 3s ease-out; }
-        .arrow { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 20px solid var(--text-main); z-index: 2; }
+        .game-section { background: rgba(255,255,255,0.3); padding: 30px; border-radius: 20px; margin-top: 40px; border: 1px dashed var(--gold); }
+        .wheel-wrap { position: relative; width: 220px; height: 220px; margin: 20px auto; }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 8px solid var(--gold); background: conic-gradient(var(--primary) 0 33%, #fff 33% 66%, var(--primary-dark) 66% 100%); transition: transform 4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid var(--text-main); z-index: 5; }
+        #wheel-msg { font-weight: bold; color: var(--gold); min-height: 50px; margin-top: 15px; font-size: 1.1rem; }
 
-        /* Mini Juego */
-        #game-area { height: 200px; border: 2px dashed var(--gold); border-radius: 10px; position: relative; overflow: hidden; display: none; margin-top: 10px; cursor: crosshair; }
-        .target { position: absolute; font-size: 2.5rem; cursor: pointer; animation: popIn 0.3s; user-select: none; }
+        /* Mini Juegos */
+        #balloon-area { height: 250px; border: 2px dashed var(--gold); border-radius: 15px; position: relative; overflow: hidden; display: none; margin-top: 15px; cursor: crosshair; }
+        .balloon-target { position: absolute; font-size: 3rem; cursor: pointer; animation: popUp 0.5s ease-out; user-select: none; }
         
-        /* Galería */
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 20px; }
-        .gallery-item { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; border: 2px solid var(--gold); transition: transform 0.3s; }
-        .gallery-item:hover { transform: scale(1.05); z-index: 2; }
+        .pinata { font-size: 4rem; cursor: pointer; display: inline-block; transition: transform 0.1s; margin: 20px 0; }
+        .pinata:active { transform: scale(0.9) rotate(5deg); }
 
-        /* Mensajes */
-        .guestbook input, .guestbook textarea { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 8px; border: 1px solid var(--primary); font-family: 'Montserrat'; }
-        .msg-list { text-align: left; max-height: 200px; overflow-y: auto; margin-top: 10px; }
-        .msg-bubble { background: #fff; padding: 10px; border-radius: 8px; margin-bottom: 5px; border-left: 3px solid var(--gold); font-size: 0.9rem; color: #333; }
+        /* Guestbook */
+        .guestbook input, .guestbook textarea { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid var(--gold); font-family: 'Montserrat'; background: rgba(255,255,255,0.8); }
+        .msg-container { text-align: left; max-height: 250px; overflow-y: auto; margin-top: 15px; }
+        .msg-card { background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--gold); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-        /* Controles Flotantes */
-        .dock { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--glass); padding: 10px 20px; border-radius: 50px; display: flex; gap: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); z-index: 100; border: 1px solid var(--gold); }
+        /* Dock Flotante */
+        .dock { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--glass-bg); padding: 10px 25px; border-radius: 50px; display: flex; gap: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 100; border: 1px solid var(--gold); backdrop-filter: blur(10px); }
         .dock-btn { background: none; border: none; font-size: 1.5rem; color: var(--gold); cursor: pointer; transition: 0.3s; }
-        .dock-btn:hover { transform: scale(1.2); }
+        .dock-btn:hover { transform: scale(1.2); color: var(--primary); }
 
-        /* Animaciones CSS */
-        @keyframes pulse { 50% { opacity: 0.5; } }
-        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
-        
-        /* Media Queries */
-        @media (max-width: 600px) {
-            .main-name { font-size: 2.8rem; }
-            .time-unit { min-width: 50px; padding: 5px; }
-        }
+        /* Mapa */
+        .map-box { width: 100%; height: 250px; border-radius: 15px; overflow: hidden; border: 2px solid var(--gold); margin-top: 10px; }
+
+        /* Scroll trigger invisible */
+        #firework-trigger { height: 1px; width: 100%; margin: 50px 0; }
+
     </style>
 </head>
 <body>
 
     <audio id="bg-music" loop>
-        <source src="https://media1.vocaroo.com/mp3/1kbE623fNJ0h" type="audio/mp3">
+        <source src="https://media1.vocaroo.com/mp3/1kbE623fNJ0h" type="audio/mp3"> 
         </audio>
     <audio id="sfx-magic" src="https://www.myinstants.com/media/sounds/fairy-dust-sparkle.mp3"></audio>
     <audio id="sfx-pop" src="https://www.myinstants.com/media/sounds/pop-sound-effect.mp3"></audio>
 
     <div id="opener">
-        <div class="envelope-container" onclick="openInvitation()">
+        <div class="envelope-wrapper" onclick="openMagicEnvelope()">
+            <div class="roses-deco" style="top:-30px; left:-30px;">🌹</div>
+            <div class="roses-deco" style="bottom:-30px; right:-30px; animation-delay:1s;">🌹</div>
             <div class="envelope">
                 <div class="flap" id="flap"></div>
-                <div class="seal" id="seal">XV</div>
+                <div class="seal" id="seal">VN</div>
             </div>
         </div>
-        <div class="tap-hint">Toca el sello para descubrir</div>
+        <div class="open-text">Toca el sello para abrir</div>
     </div>
 
-    <div class="floating-elements">
-        <div class="balloon" style="left:10%; animation-delay:0s">🎈</div>
-        <div class="balloon" style="left:30%; animation-delay:2s; filter: hue-rotate(90deg);">🎈</div>
-        <div class="balloon" style="left:70%; animation-delay:5s">✨</div>
-        <div class="balloon" style="left:85%; animation-delay:1s">🦋</div>
+    <div class="bg-floaters">
+        <div class="floater" style="left:10%; animation-delay:0s">🎈</div>
+        <div class="floater" style="left:30%; animation-delay:2s">✨</div>
+        <div class="floater" style="left:70%; animation-delay:5s">🦋</div>
+        <div class="floater" style="left:85%; animation-delay:1s">🎈</div>
+        <div class="floater" style="left:50%; animation-delay:3s">🌹</div>
     </div>
 
     <div class="dock">
@@ -208,93 +209,100 @@
 
     <div id="main-app">
         <div class="container">
-            <div class="card glass-effect">
-                <div style="font-size: 2rem; margin-bottom: 10px;">✨</div>
+            <div class="card">
+                
+                <div style="font-size: 2rem; margin-bottom: 10px; color: var(--gold);">✨ 🦋 ✨</div>
                 <p class="grandparents">
-                    Sus Abuelitos<br>
-                    <span class="gp-name">J. Leon Hernández Rodarte</span><br>y<br>
+                    Sus Abuelitos <br>
+                    <span class="gp-name">J. Leon Hernández Rodarte</span> <br>y<br>
                     <span class="gp-name">Brigida Diaz Ordaz Altamirano</span><br>
                     tienen el honor de invitarlos a los XV Años de su nieta
                 </p>
 
-                <h1 class="main-name title-gold">Valentina Najaivy</h1>
+                <h1 class="main-title">Valentina Najaivy</h1>
 
-                <hr style="border: 0; border-top: 1px solid var(--gold); width: 50%; margin: 20px auto; opacity: 0.5;">
-
-                <div class="details-grid">
-                    <div class="detail-box">
+                <div class="details-row">
+                    <div class="detail-item">
                         <i class="fas fa-calendar-alt detail-icon"></i>
                         <strong>04 ABRIL 2026</strong>
                     </div>
-                    <div class="detail-box">
+                    <div class="detail-item">
                         <i class="fas fa-clock detail-icon"></i>
                         <strong>9:00 PM</strong>
                     </div>
-                    <div class="detail-box">
+                    <div class="detail-item">
                         <i class="fas fa-map-marker-alt detail-icon"></i>
                         <strong>Salón de Eventos</strong>
-                        <div style="font-size:0.8rem; margin-top:5px">Av. Principal #123</div>
+                        <div style="font-size:0.8rem; margin-top:5px">Dirección del evento aquí</div>
                     </div>
                 </div>
 
                 <h3>Faltan...</h3>
-                <div class="countdown" id="countdown">
-                    </div>
+                <div class="countdown" id="countdown"></div>
 
-                <a href="https://wa.me/526181032190?text=¡Hola!%20Felicidades%20a%20Valentina.%20Confirmo%20mi%20asistencia%20a%20sus%20XV." target="_blank" class="btn btn-wa">
+                <a href="https://wa.me/526181032190?text=Hola,%20confirmo%20mi%20asistencia%20a%20los%20XV%20de%20Valentina%20🎀" target="_blank" class="btn btn-wa">
                     <i class="fab fa-whatsapp"></i> Confirmar Asistencia
                 </a>
-
-                <div style="margin-top: 20px; font-size: 0.9rem;">
-                    <span>👗 Código: Formal</span> &nbsp;|&nbsp; <span>🎁 Regalo: Lluvia de Sobres</span>
-                </div>
-
-                <div id="scroll-trigger" style="height:1px; margin: 30px 0;"></div>
-
-                <h2 class="title-gold" style="margin-top: 40px;">Mis Recuerdos</h2>
-                <div class="gallery-grid">
-                    <img src="https://via.placeholder.com/300x400/ffc2d1/ffffff?text=Valentina+1" class="gallery-item" alt="Foto 1">
-                    <img src="https://via.placeholder.com/300x400/d4af37/ffffff?text=Video+Click" class="gallery-item" onclick="alert('Aquí se reproduciría tu video')" alt="Video">
-                    <img src="https://via.placeholder.com/300x400/ffc2d1/ffffff?text=Valentina+2" class="gallery-item" alt="Foto 2">
-                </div>
-
-                <div class="wheel-section">
-                    <h3>🎡 Ruleta de la Suerte</h3>
-                    <p style="font-size:0.8rem">¡Gira para ver una frase sorpresa!</p>
-                    <div class="wheel-container">
-                        <div class="arrow"></div>
-                        <div class="wheel" id="wheel"></div>
-                    </div>
-                    <button class="btn" onclick="spinWheel()" style="margin-top:15px">Girar</button>
-                    <div id="wheel-result" style="margin-top:10px; font-weight:bold; color:var(--gold); min-height:24px;"></div>
-                </div>
-
-                <div class="wheel-section" style="margin-top: 20px;">
-                    <h3>🦄 Mini Juegos</h3>
-                    <p style="font-size:0.8rem">¡Revienta los globos o rompe la piñata!</p>
-                    <button class="btn" onclick="startBalloonGame()">Jugar Globos 🎈</button>
-                    <button class="btn" onclick="breakPinata()">Romper Piñata 🪅</button>
-                    <div id="game-area"></div>
-                    <div id="game-score" style="display:none; margin-top:5px;">Puntos: <span id="score">0</span></div>
-                </div>
-
-                <div class="guestbook" style="margin-top: 40px; background:rgba(255,255,255,0.6); padding:20px; border-radius:15px;">
-                    <h3>📖 Libro de Recuerdos</h3>
-                    <input type="text" id="g-name" placeholder="Tu nombre">
-                    <textarea id="g-msg" placeholder="Escribe un mensaje para Valentina..."></textarea>
-                    <button class="btn" onclick="saveMessage()">Publicar Mensaje</button>
-                    <div class="msg-list" id="msg-list"></div>
+                
+                <div style="margin-top: 25px; font-size: 0.95rem;">
+                    <span style="margin: 0 10px;">👗 Vestimenta: Formal</span> | 
+                    <span style="margin: 0 10px;">🎁 Regalo: Lluvia de Sobres</span>
                 </div>
 
                 <div style="margin-top: 40px;">
                     <h3>Ubicación</h3>
-                    <div style="width:100%; height:250px; border-radius:15px; overflow:hidden; border:2px solid var(--gold); margin-top:10px;">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3644.7310056272386!2d-104.99302!3d24.02772!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjTCsDAxJzM5LjgiTiAxMDTCsDU5JzM0LjkiVw!5e0!3m2!1ses!2smx!4v1610000000000!5m2!1ses!2smx" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    <div class="map-box">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3643.568377761008!2d-104.6702670850125!3d24.046328384443916!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x869bb7b0e51322f1%3A0x671753733075c026!2sDurango%2C%20Dgo.!5e0!3m2!1ses!2smx!4v1620000000000!5m2!1ses!2smx" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
                     </div>
-                    <a href="https://goo.gl/maps/PLACEHOLDER" target="_blank" class="btn" style="font-size:0.8rem;">Abrir en Google Maps</a>
+                    <a href="https://goo.gl/maps/PLACEHOLDER" target="_blank" class="btn" style="font-size:0.8rem; padding: 10px 20px; margin-top:10px;">Ver en Google Maps</a>
                 </div>
 
-                <div style="margin-top: 50px; font-family: 'Great Vibes'; font-size: 1.5rem;">
+                <div id="firework-trigger"></div>
+
+                <h2 style="color:var(--gold); margin-top:50px;">Mis Recuerdos</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 20px;">
+                    <img src="https://via.placeholder.com/300x400/ffc2d1/ffffff?text=Valentina+1" style="width:100%; border-radius:10px; border:2px solid var(--gold);">
+                    <img src="https://via.placeholder.com/300x400/d4af37/ffffff?text=Valentina+2" style="width:100%; border-radius:10px; border:2px solid var(--gold);">
+                    <img src="https://via.placeholder.com/300x400/ffc2d1/ffffff?text=Valentina+3" style="width:100%; border-radius:10px; border:2px solid var(--gold);">
+                </div>
+
+                <div class="game-section">
+                    <h3>🎡 Ruleta de Recuerdos</h3>
+                    <div class="wheel-wrap">
+                        <div class="pointer"></div>
+                        <div class="wheel" id="wheel"></div>
+                    </div>
+                    <button class="btn" onclick="spinWheel()">Girar Ruleta</button>
+                    <div id="wheel-msg"></div>
+                </div>
+
+                <div class="game-section">
+                    <h3>🦄 Mini Juegos</h3>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <p>¡Dale a la piñata!</p>
+                        <div class="pinata" onclick="hitPinata()">🪅</div>
+                        <p id="pinata-msg" style="font-size:0.8rem; color:var(--text-main);">Golpes: 0/10</p>
+                    </div>
+
+                    <p>¡Atrapa los globos!</p>
+                    <button class="btn" onclick="startBalloonGame()">Jugar 🎈</button>
+                    <div id="balloon-area"></div>
+                    <p id="score-display" style="display:none;">Puntos: <span id="score">0</span></p>
+                </div>
+
+                <div class="guestbook" style="margin-top: 50px;">
+                    <h3>💌 Mural de Felicitaciones</h3>
+                    <p style="font-size:0.8rem; margin-bottom:15px;">Deja un mensaje bonito para Valentina (se guardará aquí).</p>
+                    
+                    <input type="text" id="g-name" placeholder="Tu Nombre">
+                    <textarea id="g-msg" rows="3" placeholder="Escribe tu mensaje..."></textarea>
+                    <button class="btn" onclick="saveMessage()">Publicar en el Mural</button>
+                    
+                    <div class="msg-container" id="msg-container"></div>
+                </div>
+
+                <div style="margin-top: 60px; font-family: 'Great Vibes'; font-size: 1.6rem;">
                     "Será un honor contar con su presencia en este día tan especial.<br>
                     Con cariño, la familia Hernández Díaz."
                 </div>
@@ -303,59 +311,82 @@
     </div>
 
     <script>
-        // --- CONFIGURACIÓN ---
-        const eventDate = new Date("April 04, 2026 21:00:00").getTime();
+        // --- 1. CONFIGURACIÓN ---
+        const targetDate = new Date("April 04, 2026 21:00:00").getTime();
         const music = document.getElementById('bg-music');
         const sfxMagic = document.getElementById('sfx-magic');
         const sfxPop = document.getElementById('sfx-pop');
 
-        // --- 1. APERTURA ---
-        function openInvitation() {
-            sfxMagic.volume = 0.5;
-            sfxMagic.play();
+        // --- 2. APERTURA MÁGICA ---
+        function openMagicEnvelope() {
+            // Sonido
+            sfxMagic.volume = 0.6;
+            sfxMagic.play().catch(e => console.log("Audio requires interaction"));
             
-            // Animación sobre
+            // Animación CSS
             document.getElementById('flap').style.transform = 'rotateX(180deg)';
             document.getElementById('flap').style.zIndex = '1';
             document.getElementById('seal').style.opacity = '0';
-
+            
+            // Transición de pantallas
             setTimeout(() => {
                 document.getElementById('opener').style.opacity = '0';
                 setTimeout(() => {
                     document.getElementById('opener').style.display = 'none';
-                    const main = document.getElementById('main-app');
-                    main.style.display = 'block';
-                    // Animación fade in
-                    setTimeout(() => { main.style.opacity = '1'; }, 100);
+                    const app = document.getElementById('main-app');
+                    app.style.display = 'block';
                     
-                    // Iniciar música y confeti
-                    music.volume = 0.4;
-                    music.play().catch(e => console.log("Autoplay prevent"));
-                    launchConfetti();
+                    // Efecto Fade In y Partículas
+                    setTimeout(() => {
+                        app.style.opacity = '1';
+                        launchConfetti();
+                        
+                        // Música
+                        music.volume = 0.5;
+                        music.play();
+                    }, 100);
                 }, 800);
             }, 800);
         }
 
-        // --- 2. FUNCIONES BÁSICAS ---
+        // --- 3. COUNTDOWN ---
+        setInterval(() => {
+            const now = new Date().getTime();
+            const diff = targetDate - now;
+            
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('countdown').innerHTML = `
+                <div class="time-box"><span class="t-num">${d}</span><span class="t-lbl">Días</span></div>
+                <div class="time-box"><span class="t-num">${h}</span><span class="t-lbl">Hrs</span></div>
+                <div class="time-box"><span class="t-num">${m}</span><span class="t-lbl">Min</span></div>
+                <div class="time-box"><span class="t-num">${s}</span><span class="t-lbl">Seg</span></div>
+            `;
+        }, 1000);
+
+        // --- 4. CONTROLES Y MODOS ---
         function toggleMusic() {
-            const icon = document.querySelector('#btn-music i');
-            if(music.paused) { 
-                music.play(); 
-                icon.className = 'fas fa-pause';
-            } else { 
-                music.pause(); 
-                icon.className = 'fas fa-play';
+            const btn = document.getElementById('btn-music');
+            if(music.paused) {
+                music.play();
+                btn.innerHTML = '<i class="fas fa-pause"></i>';
+            } else {
+                music.pause();
+                btn.innerHTML = '<i class="fas fa-music"></i>';
             }
         }
 
         function toggleParty() {
             document.body.classList.toggle('party-mode');
-            const icon = document.querySelector('#btn-party i');
+            const btn = document.getElementById('btn-party');
             if(document.body.classList.contains('party-mode')) {
-                icon.className = 'fas fa-sun';
+                btn.innerHTML = '<i class="fas fa-sun"></i>';
                 confetti({ particleCount: 50, colors: ['#ff00ff', '#00ffff'] });
             } else {
-                icon.className = 'fas fa-moon';
+                btn.innerHTML = '<i class="fas fa-moon"></i>';
             }
         }
 
@@ -363,103 +394,110 @@
             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
         }
 
-        // --- 3. COUNTDOWN ---
-        setInterval(() => {
-            const now = new Date().getTime();
-            const dist = eventDate - now;
-            
-            const days = Math.floor(dist / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
-            
-            document.getElementById('countdown').innerHTML = `
-                <div class="time-unit"><span class="time-num">${days}</span><span class="time-label">Días</span></div>
-                <div class="time-unit"><span class="time-num">${hours}</span><span class="time-label">Hrs</span></div>
-                <div class="time-unit"><span class="time-num">${minutes}</span><span class="time-label">Min</span></div>
-            `;
-        }, 1000);
-
-        // --- 4. EXTRAS INTERACTIVOS ---
-        
-        // Ruleta
-        const phrases = ["¡Eres genial!", "¡Baila toda la noche!", "Tómate una selfie 📸", "¡Gracias por venir!", "Eres especial ✨"];
-        let wheelDeg = 0;
+        // --- 5. RULETA ---
+        const wheelPhrases = [
+            "Gracias por ser parte de mi historia 💖",
+            "Tu presencia hará mi noche más especial ✨",
+            "Estos XV son también para celebrar la amistad 🎉",
+            "¡A bailar toda la noche! 💃",
+            "Eres una persona increíble para mí 🌟"
+        ];
+        let deg = 0;
         function spinWheel() {
-            wheelDeg += Math.floor(Math.random() * 1000) + 500;
-            document.getElementById('wheel').style.transform = `rotate(${wheelDeg}deg)`;
+            deg += Math.floor(Math.random() * 1000) + 500;
+            document.getElementById('wheel').style.transform = `rotate(${deg}deg)`;
             setTimeout(() => {
-                const result = phrases[Math.floor(Math.random() * phrases.length)];
-                document.getElementById('wheel-result').innerText = result;
-                confetti({ particleCount: 20, spread: 40, origin: { y: 0.7 } });
-            }, 3000);
+                const phrase = wheelPhrases[Math.floor(Math.random() * wheelPhrases.length)];
+                document.getElementById('wheel-msg').innerText = phrase;
+                confetti({ particleCount: 30, spread: 50, origin: { y: 0.7 } });
+            }, 4000);
         }
 
-        // Mini Juegos
-        let score = 0;
-        let gameInterval;
+        // --- 6. MINI JUEGOS ---
         
-        function breakPinata() {
-            confetti({ shapes: ['square'], colors: ['#ff0000', '#00ff00', '#0000ff'] });
-            alert("¡Rompiste la piñata! 🍬🍬🍬");
+        // Piñata
+        let pinataHits = 0;
+        function hitPinata() {
+            pinataHits++;
+            sfxPop.play();
+            const el = document.querySelector('.pinata');
+            el.style.transform = `scale(1.2) rotate(${Math.random()*20-10}deg)`;
+            setTimeout(() => el.style.transform = 'scale(1) rotate(0)', 100);
+            
+            document.getElementById('pinata-msg').innerText = `Golpes: ${pinataHits}/10`;
+            
+            if(pinataHits >= 10) {
+                confetti({ particleCount: 200, spread: 100, colors:['#ff0000', '#00ff00', '#0000ff'] });
+                alert("¡PIÑATA ROTA! 🍬🍬🍬");
+                pinataHits = 0;
+                document.getElementById('pinata-msg').innerText = `Golpes: 0/10`;
+            }
         }
 
+        // Globos
+        let score = 0;
+        let balloonInterval;
         function startBalloonGame() {
-            const area = document.getElementById('game-area');
-            const scoreEl = document.getElementById('game-score');
+            const area = document.getElementById('balloon-area');
             area.style.display = 'block';
-            scoreEl.style.display = 'block';
+            document.getElementById('score-display').style.display = 'block';
             area.innerHTML = '';
             score = 0;
-            document.getElementById('score').innerText = score;
+            document.getElementById('score').innerText = '0';
             
             let count = 0;
-            gameInterval = setInterval(() => {
+            balloonInterval = setInterval(() => {
                 if(count > 10) {
-                    clearInterval(gameInterval);
-                    area.innerHTML = "<div style='display:flex; justify-content:center; align-items:center; height:100%; width:100%;'>¡Fin!</div>";
+                    clearInterval(balloonInterval);
+                    area.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%; width:100%;">¡Fin del juego!</div>';
                     return;
                 }
                 const b = document.createElement('div');
-                b.className = 'target';
                 b.innerHTML = '🎈';
+                b.className = 'balloon-target';
                 b.style.left = Math.random() * 80 + '%';
                 b.style.top = Math.random() * 80 + '%';
                 b.onclick = function() {
                     score += 10;
                     document.getElementById('score').innerText = score;
                     sfxPop.play();
-                    this.innerText = '💥';
-                    setTimeout(() => this.remove(), 200);
-                }
+                    this.remove();
+                };
                 area.appendChild(b);
-                setTimeout(() => { if(b.parentNode) b.remove() }, 1500);
+                setTimeout(() => { if(b.parentNode) b.remove(); }, 1200);
                 count++;
             }, 800);
         }
 
-        // Libro de Visitas (LocalStorage)
-        function loadMsgs() {
-            const data = JSON.parse(localStorage.getItem('xv_valentina_msgs') || "[]");
-            const list = document.getElementById('msg-list');
-            list.innerHTML = data.map(m => `<div class="msg-bubble"><strong>${m.n}:</strong> ${m.t}</div>`).join('');
+        // --- 7. MURAL (LOCALSTORAGE) ---
+        function loadMessages() {
+            const msgs = JSON.parse(localStorage.getItem('xv_valentina_book') || "[]");
+            const container = document.getElementById('msg-container');
+            container.innerHTML = msgs.map(m => `
+                <div class="msg-card">
+                    <strong style="color:var(--gold)">${m.name}</strong><br>
+                    ${m.text}
+                </div>
+            `).join('');
         }
+
         function saveMessage() {
             const name = document.getElementById('g-name').value;
-            const txt = document.getElementById('g-msg').value;
-            if(!name || !txt) return alert("Faltan datos");
+            const text = document.getElementById('g-msg').value;
+            if(!name || !text) return alert("Por favor escribe tu nombre y mensaje");
             
-            const data = JSON.parse(localStorage.getItem('xv_valentina_msgs') || "[]");
-            data.unshift({ n: name, t: txt });
-            localStorage.setItem('xv_valentina_msgs', JSON.stringify(data));
+            const msgs = JSON.parse(localStorage.getItem('xv_valentina_book') || "[]");
+            msgs.unshift({ name, text });
+            localStorage.setItem('xv_valentina_book', JSON.stringify(msgs));
             
             document.getElementById('g-name').value = '';
             document.getElementById('g-msg').value = '';
-            loadMsgs();
-            alert("¡Mensaje guardado!");
+            loadMessages();
+            launchConfetti();
         }
-        loadMsgs(); // Cargar al inicio
+        loadMessages(); // Cargar al inicio
 
-        // Scroll Animation
+        // --- 8. SCROLL ANIMATION ---
         const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if(entry.isIntersecting) {
@@ -468,7 +506,7 @@
                 }
             });
         });
-        observer.observe(document.getElementById('scroll-trigger'));
+        observer.observe(document.getElementById('firework-trigger'));
 
     </script>
 </body>
